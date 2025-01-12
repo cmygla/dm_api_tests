@@ -8,4 +8,5 @@ def get_activation_token_by_login(login, response):
         user_login = user_data.get("Login")
         if user_login == login:
             token = user_data.get("ConfirmationLinkUrl").split('/')[-1]
+            break
     return token

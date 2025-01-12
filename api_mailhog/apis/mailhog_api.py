@@ -10,7 +10,7 @@ class MailhogApi(BaseApi):
         self.headers = headers
 
     def get_api_v2_messages(
-            self, limit=50
+            self, limit=20
     ):
         """
         Get user's emails

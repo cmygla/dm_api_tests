@@ -41,3 +41,23 @@ class AccountApi(BaseApi):
             url=f'{self.host}/v1/account/{token}'
         )
         return response
+
+    def put_v1_account_email(
+            self, email, login, password
+    ):
+        """
+        Register user
+        :param email:
+        :param login:
+        :param password:
+        :return:
+        """
+        json_data = {
+            'login': login,
+            'email': email,
+            'password': password,
+        }
+        response = self.put(
+            url=f'{self.host}/v1/account/email', json=json_data
+        )
+        return response

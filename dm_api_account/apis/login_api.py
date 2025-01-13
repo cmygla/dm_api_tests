@@ -1,13 +1,11 @@
-from common.api_client.base_api import BaseApi
+from restclient.client import RestClient
 
 
-class LoginApi(BaseApi):
+class LoginApi(RestClient):
     def __init__(
-            self, host="http://5.63.153.31:5051", headers=None
+            self
     ):
-        super().__init__()
-        self.host = host  #
-        self.headers = headers
+        super().__init__(host="http://5.63.153.31:5051")
 
     def post_v1_account_login(
             self, login, password
@@ -23,5 +21,5 @@ class LoginApi(BaseApi):
             'password': password,
             'rememberMe': True,
         }
-        response = self.post(url=f'{self.host}/v1/account/login', json=json_data)
+        response = self.post(path='/v1/account/login', json=json_data)
         return response

@@ -2,9 +2,6 @@ from restclient.client import RestClient
 
 
 class AccountApi(RestClient):
-    def __init__(
-            self, ):
-        super().__init__(host="http://5.63.153.31:5051")
 
     def post_v1_account(
             self, email, login, password

@@ -1,9 +1,3 @@
-from conftest import (
-    account_helper,
-    mailhog_helper,
-)
-
-
 def test_put_v1_account_email(mailhog_helper, account_helper, test_data):
     account_helper.register_new_user(email=test_data["email"], login=test_data["login"], password=test_data["password"])
     account_helper.login_user(login=test_data["login"], password=test_data["password"])

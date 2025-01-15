@@ -1,7 +1,5 @@
 import uuid
 
-from conftest import account_helper
-
 
 def test_put_v1_account_token_not_valid(account_helper):
     # активация  с невалидным токеном

@@ -1,13 +1,7 @@
-from common.api_client.base_api import BaseApi
+from restclient.client import RestClient
 
 
-class AccountApi(BaseApi):
-    def __init__(
-            self, host="http://5.63.153.31:5051", headers=None
-    ):
-        super().__init__()
-        self.host = host  #
-        self.headers = headers
+class AccountApi(RestClient):
 
     def post_v1_account(
             self, email, login, password
@@ -25,7 +19,7 @@ class AccountApi(BaseApi):
             'password': password,
         }
         response = self.post(
-            url=f'{self.host}/v1/account', json=json_data
+            path='/v1/account', json=json_data
         )
         return response
 
@@ -38,7 +32,7 @@ class AccountApi(BaseApi):
         :return:
         """
         response = self.put(
-            url=f'{self.host}/v1/account/{token}'
+            path=f'/v1/account/{token}'
         )
         return response
 
@@ -58,6 +52,6 @@ class AccountApi(BaseApi):
             'password': password,
         }
         response = self.put(
-            url=f'{self.host}/v1/account/email', json=json_data
+            path='/v1/account/email', json=json_data
         )
         return response

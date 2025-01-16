@@ -27,3 +27,9 @@ class AccountHelper:
             login=login, password=password
         )
         assert response.status_code == 200, "Пользователь не смог авторизоваться"
+
+    def update_email(self, login: str, password: str, email: str):
+        response = self.dm_api_account.account_api.put_v1_account_email(
+            email=f'new_{email}', login=login, password=password
+        )
+        assert response.status_code == 200, "Email не был изменен"

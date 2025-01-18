@@ -29,8 +29,8 @@ def retrier(func):
 
 
 class MailhogHelper:
-    def __init__(self, mailhog: Mailhog):
-        self.mailhog = mailhog
+    def __init__(self, mailhog_client: Mailhog):
+        self.mailhog = mailhog_client
 
     def get_activation_token_by_login(self, login: str):
         token = self.get_activation_token(login)

@@ -3,9 +3,9 @@ from services.dm_api_account import DmApiAccount
 
 
 class AccountHelper:
-    def __init__(self, dm_api_account: DmApiAccount, mailhog_helper: MailhogHelper):
+    def __init__(self, dm_api_account_client: DmApiAccount, mailhog_helper: MailhogHelper):
         self.mailhog_helper = mailhog_helper
-        self.dm_api_account = dm_api_account
+        self.dm_api_account = dm_api_account_client
 
     def create_user(self, login: str, password: str, email: str):
         response = self.dm_api_account.account_api.post_v1_account(

@@ -14,7 +14,7 @@ from services.dm_api_account import DmApiAccount
 @pytest.fixture
 def prepared_user():
     now = datetime.now()
-    date = now.strftime("%d_%m_%H_%M_%S_%f")
+    date = now.strftime("%H_%M_%S_%f")
     login = f'ekv_{date}'
     password = '12345678'
     email = f'{login}@mail.ru'

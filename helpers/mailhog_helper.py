@@ -45,6 +45,8 @@ class MailhogHelper:
             user_data = loads(item.get('Content').get('Body'))
             user_login = user_data.get("Login")
             if user_login == login:
-                token = user_data.get("ConfirmationLinkUrl").split('/')[-1]
-                break
+                confirmation_link = user_data.get("ConfirmationLinkUrl") or user_data.get("ConfirmationLinkUri")
+                if confirmation_link is not None:
+                    token = confirmation_link.split('/')[-1]
+                    break
         return token

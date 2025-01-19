@@ -29,22 +29,28 @@ def retrier(func):
 
 
 class MailhogHelper:
-    def __init__(self, mailhog: Mailhog):
-        self.mailhog = mailhog
+    def __init__(self, mailhog_client: Mailhog):
+        self.mailhog = mailhog_client
 
-    def get_activation_token_by_login(self, login: str):
-        token = self.get_activation_token(login)
+    def get_activation_token_by_login(self, login: str, type_: str = "registration"):
+        token = self.get_activation_token(login=login, type_=type_)
         return token
 
     @retry(stop_max_attempt_number=5, wait_fixed=1000, retry_on_result=retry_if_result_none)
-    def get_activation_token(self, login):
+    def get_activation_token(self, login: str, type_: str, limit: str = 20):
         token = None
-        response = self.mailhog.mailhog_api.get_api_v2_messages()
+        params = {
+            'limit': limit,
+        }
+        response = self.mailhog.mailhog_api.get_api_v2_messages(params)
+        token_name = "ConfirmationLinkUrl" if type_.lower() == "registration" else "ConfirmationLinkUri"
 
         for item in response.json()["items"]:
             user_data = loads(item.get('Content').get('Body'))
             user_login = user_data.get("Login")
             if user_login == login:
-                token = user_data.get("ConfirmationLinkUrl").split('/')[-1]
-                break
+                confirmation_link = user_data.get(token_name)
+                if confirmation_link is not None:
+                    token = confirmation_link.split('/')[-1]
+                    break
         return token

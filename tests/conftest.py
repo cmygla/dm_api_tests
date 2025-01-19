@@ -1,36 +1,49 @@
 # https://intellij-support.jetbrains.com/hc/en-us/community/posts/12897247432338-PyCharm-unable-to-find-fixtures-in-conftest-py
+from collections import namedtuple
+from datetime import datetime
+
 import pytest
 
-from common.tools.base_randomizer import generate_random_string
 from helpers.account_helper import AccountHelper
 from helpers.mailhog_helper import MailhogHelper
 from restclient.configuration import Configuration
 from services.api_mailhog import Mailhog
 from services.dm_api_account import DmApiAccount
 
-mailhog_configuration = Configuration(host="http://5.63.153.31:5025")
-dm_api_configuration = Configuration(host="http://5.63.153.31:5051", disable_logs=False)
-
 
 @pytest.fixture
-def test_data():
-    login = f'user_{generate_random_string(6)}'
-    password = generate_random_string(12)
+def prepared_user():
+    now = datetime.now()
+    date = now.strftime("%H_%M_%S_%f")
+    login = f'ekv_{date}'
+    password = '12345678'
     email = f'{login}@mail.ru'
-    return {
-        "login": login,
-        "password": password,
-        "email": email
-    }
+    User = namedtuple('User', ['login', 'password', 'email'])
+    user = User(login=login, password=password, email=email)
+    return user
 
 
 @pytest.fixture
-def mailhog_helper():
-    return MailhogHelper(Mailhog(configuration=mailhog_configuration))
+def dm_api_client():
+    dm_api_configuration = Configuration(host="http://5.63.153.31:5051", disable_logs=False)
+    dm_api_client = DmApiAccount(configuration=dm_api_configuration)
+    return dm_api_client
 
 
 @pytest.fixture
-def account_helper(mailhog_helper):
+def mailhog_client():
+    mailhog_configuration = Configuration(host="http://5.63.153.31:5025")
+    mailhog_client = Mailhog(configuration=mailhog_configuration)
+    return mailhog_client
+
+
+@pytest.fixture
+def mailhog_helper(mailhog_client):
+    return MailhogHelper(mailhog_client=mailhog_client)
+
+
+@pytest.fixture
+def account_helper(dm_api_client, mailhog_helper):
     return AccountHelper(
-        dm_api_account=DmApiAccount(configuration=dm_api_configuration), mailhog_helper=mailhog_helper
+        dm_api_account_client=dm_api_client, mailhog_helper=mailhog_helper
     )

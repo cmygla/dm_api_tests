@@ -1,3 +1,6 @@
-def test_post_v1_account(account_helper, test_data):
-    account_helper.register_new_user(email=test_data["email"], login=test_data["login"], password=test_data["password"])
-    account_helper.login_user(login=test_data["login"], password=test_data["password"])
+def test_post_v1_account(account_helper, prepared_user):
+    login = prepared_user.login
+    password = prepared_user.password
+    email = prepared_user.email
+    account_helper.register_new_user(email=email, login=login, password=password)
+    account_helper.login_user(login=login, password=password)

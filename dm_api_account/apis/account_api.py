@@ -30,22 +30,22 @@ class AccountApi(RestClient):
         )
         return response
 
-    def get_v1_account(self, headers):
-        response = self.get(path='/v1/account', headers=headers)
+    def get_v1_account(self):
+        response = self.get(path='/v1/account')
         return response
 
-    def delete_v1_account_login(self, headers):
-        response = self.delete(path='/v1/account/login', headers=headers)
+    def delete_v1_account_login(self):
+        response = self.delete(path='/v1/account/login')
         return response
 
-    def delete_v1_account_login_all(self, headers):
-        response = self.delete(path='/v1/account/login/all', headers=headers)
+    def delete_v1_account_login_all(self):
+        response = self.delete(path='/v1/account/login/all')
         return response
 
-    def post_v1_account_password(self, headers, json_data):
-        response = self.post(path='/v1/account/password', headers=headers, json=json_data)
+    def post_v1_account_password(self, json_data):
+        response = self.post(path='/v1/account/password', json=json_data)
         return response
 
-    def put_v1_account_password(self, headers, json_data):
-        response = self.put(path='/v1/account/password', headers=headers, json=json_data)
+    def put_v1_account_password(self, json_data):
+        response = self.put(path='/v1/account/password', json=json_data)
         return response

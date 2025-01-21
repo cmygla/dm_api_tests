@@ -47,3 +47,12 @@ def account_helper(dm_api_client, mailhog_helper):
     return AccountHelper(
         dm_api_account_client=dm_api_client, mailhog_helper=mailhog_helper
     )
+
+
+@pytest.fixture
+def auth_account_helper(prepared_user, mailhog_helper):
+    dm_api_configuration = Configuration(host="http://5.63.153.31:5051", disable_logs=False)
+    dm_api_client = DmApiAccount(configuration=dm_api_configuration)
+    account_helper = AccountHelper(dm_api_account_client=dm_api_client, mailhog_helper=mailhog_helper)
+    account_helper.auth_client(login=prepared_user.login, password=prepared_user.password, email=prepared_user.email)
+    return account_helper

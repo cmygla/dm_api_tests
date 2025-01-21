@@ -16,10 +16,14 @@ class RestClient:
             self, configuration: Configuration
     ):
         self.host = configuration.host  #
-        self.headers = configuration.headers
+        self.set_headers(configuration.headers)
         self.disable_logs = configuration.disable_logs
         self.session = requests.Session()
         self.log = structlog.getLogger(__name__).bind(service='api')
+
+    def set_headers(self, headers):
+        if headers:
+            self.session.headers.update(headers)
 
     def get(
             self, path, **kwargs

@@ -1,3 +1,5 @@
+import time
+
 from helpers.mailhog_helper import MailhogHelper
 from services.dm_api_account import DmApiAccount
 
@@ -22,7 +24,10 @@ class AccountHelper:
 
     def register_new_user(self, login: str, password: str, email: str):
         self.create_user(email=email, login=login, password=password)
+        start_time = time.time()
         token = self.mailhog_helper.get_activation_token_by_login(login=login)
+        end_time = time.time()
+        assert end_time - start_time < 3, "Время ожидания активации превышено"
         self.activate_user(token)
 
     def login_user_raw(self, login: str, password: str):
@@ -37,14 +42,16 @@ class AccountHelper:
     def login_user(self, login: str, password: str):
         response = self.login_user_raw(login=login, password=password)
         assert response.status_code == 200, "Пользователь не смог авторизоваться"
+        assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
 
     def auth_client(self, login: str, password: str, email: str):
         self.register_new_user(login=login, password=password, email=email)
         response = self.login_user_raw(login=login, password=password)
         assert response.status_code == 200, "Пользователь не смог авторизоваться"
-        auth_token = response.headers['X-Dm-Auth-Token']
+        assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
+
         headers = {
-            'X-Dm-Auth-Token': auth_token
+            'X-Dm-Auth-Token': response.headers['X-Dm-Auth-Token']
         }
         self.dm_api_account.account_api.set_headers(headers=headers)
         self.dm_api_account.login_api.set_headers(headers=headers)
@@ -76,7 +83,6 @@ class AccountHelper:
             'email': email
         }
         response = self.dm_api_account.account_api.post_v1_account_password(json_data=json_data)
-
         assert response.status_code == 200, "Пароль не был сброшен"
 
         reset_token = self.mailhog_helper.get_activation_token_by_login(login=login, type_="reset")

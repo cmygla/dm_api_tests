@@ -10,6 +10,9 @@ from services.dm_api_account import DmApiAccount
 
 class AccountHelper:
     def __init__(self, dm_api_account_client: DmApiAccount, mailhog_helper: MailhogHelper):
+        self.email = None
+        self.login = None
+        self.password = None
         self.mailhog_helper = mailhog_helper
         self.dm_api_account = dm_api_account_client
 
@@ -39,10 +42,12 @@ class AccountHelper:
         )
         return response
 
-    def login_user(self, login: str, password: str, validate_response: bool = True):
+    def login_user(self, login: str, password: str, validate_response: bool = True, validate_headers: bool = True):
         response = self.login_user_raw(login=login, password=password, validate_response=validate_response)
-        assert response.status_code == 200, "Пользователь не смог авторизоваться"
-        assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
+        if validate_headers:
+            assert response.status_code == 200, "Пользователь не смог авторизоваться"
+            assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
+        return response
 
     def auth_client(self, login: str, password: str, email: str, validate_response: bool = True):
         self.register_new_user(login=login, password=password, email=email, validate_response=validate_response)
@@ -55,6 +60,9 @@ class AccountHelper:
         }
         self.dm_api_account.account_api.set_headers(headers=headers)
         self.dm_api_account.login_api.set_headers(headers=headers)
+        self.login = login
+        self.password = password
+        self.email = email
 
     def update_email(self, login: str, password: str, email: str, validate_response: bool = True):
         json_data = {
@@ -65,9 +73,11 @@ class AccountHelper:
         response = self.dm_api_account.account_api.put_v1_account_email(json_data, validate_response=validate_response)
         assert response.status_code == 200, "Email не был изменен"
 
-    def get_user_info(self, validate_response: bool = True):
+    def get_user_info(self, validate_response: bool = True, validate_headers: bool = True):
         response = self.dm_api_account.account_api.get_v1_account(validate_response=validate_response)
-        assert response.status_code == 200, "Информация о пользователе не получена"
+        if validate_headers:
+            assert response.status_code == 200, "Информация о пользователе не получена"
+        return response
 
     def delete_account_login(self):
         response = self.dm_api_account.account_api.delete_v1_account_login()

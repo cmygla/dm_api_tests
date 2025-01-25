@@ -1,10 +1,12 @@
 # https://intellij-support.jetbrains.com/hc/en-us/community/posts/12897247432338-PyCharm-unable-to-find-fixtures-in-conftest-py
-from collections import namedtuple
 from datetime import datetime
 
 import pytest
 
-from helpers.account_helper import AccountHelper
+from helpers.account_helper import (
+    AccountHelper,
+    Credentials,
+)
 from helpers.mailhog_helper import MailhogHelper
 from restclient.configuration import Configuration
 from services.api_mailhog import Mailhog
@@ -18,8 +20,7 @@ def prepared_user():
     login = f'ekv_{date}'
     password = '12345678'
     email = f'{login}@mail.ru'
-    User = namedtuple('User', ['login', 'password', 'email'])
-    user = User(login=login, password=password, email=email)
+    user = Credentials(login=login, password=password, email=email)
     return user
 
 

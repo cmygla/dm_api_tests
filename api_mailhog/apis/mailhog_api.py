@@ -9,4 +9,4 @@ class MailhogApi(RestClient):
         response = self.get(
             path='/api/v2/messages', params=params, verify=False
         )
-        return response.body
+        return response

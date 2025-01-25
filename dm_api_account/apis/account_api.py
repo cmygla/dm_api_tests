@@ -3,7 +3,10 @@ from dm_api_account.models.registration import Registration
 from dm_api_account.models.reset_password import ResetPassword
 from dm_api_account.models.user_details_envelope import UserDetailsEnvelope
 from dm_api_account.models.user_envelope import UserEnvelope
-from restclient.client import RestClient
+from restclient.client import (
+    RestClient,
+    RESTResponse,
+)
 
 
 class AccountApi(RestClient):
@@ -14,42 +17,42 @@ class AccountApi(RestClient):
         response = self.post(
             path='/v1/account', json=registration.model_dump(exclude_none=True, by_alias=True)
         )
-        return response.body
+        return response
 
     def put_v1_account_token(
-            self, token, validate_response=True
+            self, token
     ):
         response = self.put(
             path=f'/v1/account/{token}'
         )
-        return UserEnvelope(**response.body)
+        return RESTResponse(headers=response.headers, body=UserEnvelope(**response.body))
 
-    def put_v1_account_email(self, json_data, validate_response=True):
+    def put_v1_account_email(self, json_data):
         response = self.put(
             path='/v1/account/email', json=json_data
         )
-        return UserEnvelope(**response.body)
+        return RESTResponse(headers=response.headers, body=UserEnvelope(**response.body))
 
-    def get_v1_account(self, validate_response=True):
+    def get_v1_account(self):
         response = self.get(path='/v1/account')
-        return UserDetailsEnvelope(**response.body)
+        return RESTResponse(headers=response.headers, body=UserDetailsEnvelope(**response.body))
 
     def delete_v1_account_login(self):
         response = self.delete(path='/v1/account/login')
-        return response.body
+        return response
 
     def delete_v1_account_login_all(self):
         response = self.delete(path='/v1/account/login/all')
-        return response.body
+        return response
 
-    def post_v1_account_password(self, reset_password: ResetPassword, validate_response=True):
+    def post_v1_account_password(self, reset_password: ResetPassword):
         response = self.post(
             path='/v1/account/password', json=reset_password.model_dump(exclude_none=True, by_alias=True)
         )
-        return UserEnvelope(**response.body)
+        return RESTResponse(headers=response.headers, body=UserEnvelope(**response.body))
 
-    def put_v1_account_password(self, change_password: ChangePassword, validate_response=True):
+    def put_v1_account_password(self, change_password: ChangePassword):
         response = self.put(
             path='/v1/account/password', json=change_password.model_dump(exclude_none=True, by_alias=True)
         )
-        return UserEnvelope(**response.body)
+        return RESTResponse(headers=response.headers, body=UserEnvelope(**response.body))

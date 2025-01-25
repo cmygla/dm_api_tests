@@ -27,7 +27,7 @@ def test_post_v1_account(account_helper, prepared_user):
     password = prepared_user.password
     email = prepared_user.email
     account_helper.register_new_user(email=email, login=login, password=password)
-    response = account_helper.login_user(login=login, password=password, validate_headers=False)
+    response = account_helper.login_user(login=login, password=password)
     assert_that(
         response.body, all_of(
             has_property('resource', has_property('login', equal_to(login))),

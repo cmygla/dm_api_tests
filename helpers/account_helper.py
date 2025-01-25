@@ -46,17 +46,14 @@ class AccountHelper:
         )
         return response
 
-    def login_user(self, login: str, password: str, validate_response: bool = True, validate_headers: bool = True):
+    def login_user(self, login: str, password: str, validate_response: bool = True):
         response = self.login_user_raw(login=login, password=password, validate_response=validate_response)
-        if validate_headers:
-            assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
+        assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
         return response
 
     def auth_client(self, login: str, password: str, email: str, validate_response: bool = True):
         self.register_new_user(login=login, password=password, email=email, validate_response=validate_response)
         response = self.login_user_raw(login=login, password=password, validate_response=validate_response)
-        assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
-
         headers = {
             'X-Dm-Auth-Token': response.headers['X-Dm-Auth-Token']}
         self.dm_api_account.account_api.set_headers(headers=headers)
@@ -72,10 +69,8 @@ class AccountHelper:
             'password': password, }
         response = self.dm_api_account.account_api.put_v1_account_email(json_data, validate_response=validate_response)
 
-    def get_user_info(self, validate_response: bool = True, validate_headers: bool = True):
+    def get_user_info(self, validate_response: bool = True):
         response = self.dm_api_account.account_api.get_v1_account(validate_response=validate_response)
-        if validate_headers:
-            assert response.status_code == 200, "Информация о пользователе не получена"
         return response
 
     def delete_account_login(self):

@@ -52,4 +52,4 @@ class AccountApi(RestClient):
         response = self.put(
             path='/v1/account/password', json=change_password.model_dump(exclude_none=True, by_alias=True)
         )
-        UserEnvelope(**response.body)
+        return UserEnvelope(**response.body)

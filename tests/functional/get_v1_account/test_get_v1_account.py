@@ -14,7 +14,7 @@ from checkers.http_checkers import check_status_code_http
 
 def test_get_v1_account_auth(auth_account_helper):
     with check_status_code_http():
-        response = auth_account_helper.get_user_info(validate_headers=False)
+        response = auth_account_helper.get_user_info()
         print(response)
         assert_that(
             response.resource, has_properties(
@@ -28,4 +28,4 @@ def test_get_v1_account_auth(auth_account_helper):
 
 def test_get_v1_account_no_auth(account_helper):
     with check_status_code_http(401, "User must be authenticated"):
-        response = account_helper.get_user_info(validate_headers=False)
+        response = account_helper.get_user_info()

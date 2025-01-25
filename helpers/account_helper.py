@@ -1,4 +1,5 @@
 import time
+from collections import namedtuple
 
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
@@ -7,11 +8,19 @@ from dm_api_account.models.reset_password import ResetPassword
 from helpers.mailhog_helper import MailhogHelper
 from services.dm_api_account import DmApiAccount
 
+Credentials = namedtuple('Credentials', ['login', 'password', 'email'])
+
 
 class AccountHelper:
     def __init__(self, dm_api_account_client: DmApiAccount, mailhog_helper: MailhogHelper):
+        self._email = None
+        self._login = None
+        self._password = None
         self.mailhog_helper = mailhog_helper
         self.dm_api_account = dm_api_account_client
+
+    def get_credentials(self):
+        return Credentials(self._login, self._password, self._email)
 
     def create_user(self, login: str, password: str, email: str):
         reigistaration = Registration(login=login, password=password, email=email)
@@ -39,10 +48,12 @@ class AccountHelper:
         )
         return response
 
-    def login_user(self, login: str, password: str, validate_response: bool = True):
+    def login_user(self, login: str, password: str, validate_response: bool = True, validate_headers: bool = True):
         response = self.login_user_raw(login=login, password=password, validate_response=validate_response)
-        assert response.status_code == 200, "Пользователь не смог авторизоваться"
-        assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
+        if validate_headers:
+            assert response.status_code == 200, "Пользователь не смог авторизоваться"
+            assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
+        return response
 
     def auth_client(self, login: str, password: str, email: str, validate_response: bool = True):
         self.register_new_user(login=login, password=password, email=email, validate_response=validate_response)
@@ -55,6 +66,9 @@ class AccountHelper:
         }
         self.dm_api_account.account_api.set_headers(headers=headers)
         self.dm_api_account.login_api.set_headers(headers=headers)
+        self._login = login
+        self._password = password
+        self._email = email
 
     def update_email(self, login: str, password: str, email: str, validate_response: bool = True):
         json_data = {
@@ -65,9 +79,11 @@ class AccountHelper:
         response = self.dm_api_account.account_api.put_v1_account_email(json_data, validate_response=validate_response)
         assert response.status_code == 200, "Email не был изменен"
 
-    def get_user_info(self, validate_response: bool = True):
+    def get_user_info(self, validate_response: bool = True, validate_headers: bool = True):
         response = self.dm_api_account.account_api.get_v1_account(validate_response=validate_response)
-        assert response.status_code == 200, "Информация о пользователе не получена"
+        if validate_headers:
+            assert response.status_code == 200, "Информация о пользователе не получена"
+        return response
 
     def delete_account_login(self):
         response = self.dm_api_account.account_api.delete_v1_account_login()

@@ -14,54 +14,42 @@ class AccountApi(RestClient):
         response = self.post(
             path='/v1/account', json=registration.model_dump(exclude_none=True, by_alias=True)
         )
-        return response
+        return response.body
 
     def put_v1_account_token(
             self, token, validate_response=True
     ):
         response = self.put(
-            path=f'/v1/account/{token}', mute_error=not validate_response
+            path=f'/v1/account/{token}'
         )
-        if validate_response:
-            return UserEnvelope(**response.json())
-        return response
+        return UserEnvelope(**response.body)
 
     def put_v1_account_email(self, json_data, validate_response=True):
         response = self.put(
-            path='/v1/account/email', json=json_data, mute_error=not validate_response
+            path='/v1/account/email', json=json_data
         )
-        if validate_response:
-            return UserEnvelope(**response.json())
-        return response
+        return UserEnvelope(**response.body)
 
     def get_v1_account(self, validate_response=True):
-        response = self.get(path='/v1/account', mute_error=not validate_response)
-        if validate_response:
-            return UserDetailsEnvelope(**response.json())
-        return response
+        response = self.get(path='/v1/account')
+        return UserDetailsEnvelope(**response.body)
 
     def delete_v1_account_login(self):
         response = self.delete(path='/v1/account/login')
-        return response
+        return response.body
 
     def delete_v1_account_login_all(self):
         response = self.delete(path='/v1/account/login/all')
-        return response
+        return response.body
 
     def post_v1_account_password(self, reset_password: ResetPassword, validate_response=True):
         response = self.post(
-            path='/v1/account/password', json=reset_password.model_dump(exclude_none=True, by_alias=True),
-            mute_error=not validate_response
+            path='/v1/account/password', json=reset_password.model_dump(exclude_none=True, by_alias=True)
         )
-        if validate_response:
-            return UserEnvelope(**response.json())
-        return response
+        return UserEnvelope(**response.body)
 
     def put_v1_account_password(self, change_password: ChangePassword, validate_response=True):
         response = self.put(
-            path='/v1/account/password', json=change_password.model_dump(exclude_none=True, by_alias=True),
-            mute_error=not validate_response
+            path='/v1/account/password', json=change_password.model_dump(exclude_none=True, by_alias=True)
         )
-        if validate_response:
-            return UserEnvelope(**response.json())
-        return response
+        UserEnvelope(**response.body)

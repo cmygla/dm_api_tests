@@ -26,10 +26,10 @@ def test_post_v1_account(account_helper, prepared_user):
     login = prepared_user.login
     password = prepared_user.password
     email = prepared_user.email
-    account_helper.register_new_user(email=email, login=login, password=password, validate_response=False)
+    account_helper.register_new_user(email=email, login=login, password=password)
     response = account_helper.login_user(login=login, password=password, validate_headers=False)
     assert_that(
-        response, all_of(
+        response.body, all_of(
             has_property('resource', has_property('login', equal_to(login))),
             has_property('resource', has_property('registration', instance_of(datetime))), has_property(
                 'resource', has_property(
@@ -69,4 +69,4 @@ def test_negative_post_v1_account(
         account_helper, login, email, password, expected_status_code, expected_title, expected_errors
 ):
     with check_status_code_http(expected_status_code, expected_title, expected_errors):
-        account_helper.register_new_user(email=email, login=login, password=password, validate_response=True)
+        account_helper.register_new_user(email=email, login=login, password=password)

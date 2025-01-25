@@ -1,4 +1,5 @@
 import time
+from collections import namedtuple
 
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
@@ -7,14 +8,19 @@ from dm_api_account.models.reset_password import ResetPassword
 from helpers.mailhog_helper import MailhogHelper
 from services.dm_api_account import DmApiAccount
 
+Credentials = namedtuple('Credentials', ['login', 'password', 'email'])
+
 
 class AccountHelper:
     def __init__(self, dm_api_account_client: DmApiAccount, mailhog_helper: MailhogHelper):
-        self.email = None
-        self.login = None
-        self.password = None
+        self._email = None
+        self._login = None
+        self._password = None
         self.mailhog_helper = mailhog_helper
         self.dm_api_account = dm_api_account_client
+
+    def get_credentials(self):
+        return Credentials(self._login, self._password, self._email)
 
     def create_user(self, login: str, password: str, email: str):
         reigistaration = Registration(login=login, password=password, email=email)
@@ -60,9 +66,9 @@ class AccountHelper:
         }
         self.dm_api_account.account_api.set_headers(headers=headers)
         self.dm_api_account.login_api.set_headers(headers=headers)
-        self.login = login
-        self.password = password
-        self.email = email
+        self._login = login
+        self._password = password
+        self._email = email
 
     def update_email(self, login: str, password: str, email: str, validate_response: bool = True):
         json_data = {

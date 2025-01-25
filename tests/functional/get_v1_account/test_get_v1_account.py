@@ -16,7 +16,7 @@ def test_get_v1_account(auth_account_helper):
     assert_that(
         response.resource, has_properties(
             {
-                "login": auth_account_helper.login,
+                "login": auth_account_helper.get_credentials().login,
                 "roles": has_length(greater_than_or_equal_to(2)),
                 "online": has_string(starts_with(str(datetime.now().date())))
             }

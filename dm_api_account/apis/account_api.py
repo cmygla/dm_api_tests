@@ -20,7 +20,7 @@ class AccountApi(RestClient):
             self, token, validate_response=True
     ):
         response = self.put(
-            path=f'/v1/account/{token}'
+            path=f'/v1/account/{token}', mute_error=not validate_response
         )
         if validate_response:
             return UserEnvelope(**response.json())
@@ -28,14 +28,14 @@ class AccountApi(RestClient):
 
     def put_v1_account_email(self, json_data, validate_response=True):
         response = self.put(
-            path='/v1/account/email', json=json_data
+            path='/v1/account/email', json=json_data, mute_error=not validate_response
         )
         if validate_response:
             return UserEnvelope(**response.json())
         return response
 
     def get_v1_account(self, validate_response=True):
-        response = self.get(path='/v1/account')
+        response = self.get(path='/v1/account', mute_error=not validate_response)
         if validate_response:
             return UserDetailsEnvelope(**response.json())
         return response
@@ -50,7 +50,8 @@ class AccountApi(RestClient):
 
     def post_v1_account_password(self, reset_password: ResetPassword, validate_response=True):
         response = self.post(
-            path='/v1/account/password', json=reset_password.model_dump(exclude_none=True, by_alias=True)
+            path='/v1/account/password', json=reset_password.model_dump(exclude_none=True, by_alias=True),
+            mute_error=not validate_response
         )
         if validate_response:
             return UserEnvelope(**response.json())
@@ -58,7 +59,8 @@ class AccountApi(RestClient):
 
     def put_v1_account_password(self, change_password: ChangePassword, validate_response=True):
         response = self.put(
-            path='/v1/account/password', json=change_password.model_dump(exclude_none=True, by_alias=True)
+            path='/v1/account/password', json=change_password.model_dump(exclude_none=True, by_alias=True),
+            mute_error=not validate_response
         )
         if validate_response:
             return UserEnvelope(**response.json())

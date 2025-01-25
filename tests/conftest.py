@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 
+from common.tools.base_randomizer import generate_email
 from helpers.account_helper import (
     AccountHelper,
     Credentials,
@@ -19,7 +20,7 @@ def prepared_user():
     date = now.strftime("%H_%M_%S_%f")
     login = f'ekv_{date}'
     password = '12345678'
-    email = f'{login}@mail.ru'
+    email = generate_email(login)
     user = Credentials(login=login, password=password, email=email)
     return user
 

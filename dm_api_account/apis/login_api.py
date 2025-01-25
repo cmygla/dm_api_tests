@@ -9,7 +9,8 @@ class LoginApi(RestClient):
             self, login_credentials: LoginCredentials, validate_response: bool
     ):
         response = self.post(
-            path='/v1/account/login', json=login_credentials.model_dump(exclude_none=True, by_alias=True)
+            path='/v1/account/login', json=login_credentials.model_dump(exclude_none=True, by_alias=True),
+            mute_error=not validate_response
         )
         if validate_response:
             return UserEnvelope(**response.json())

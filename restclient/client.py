@@ -50,11 +50,13 @@ class RestClient:
     ):
         return self._send_request(method='DELETE', path=path, **kwargs)
 
-    def _send_request(self, method, path, **kwargs):
+    def _send_request(self, method, path, mute_error=False, **kwargs):
         log = self.log.bind(event_id=str(uuid.uuid4()))
         full_url = self.host + path
         if self.disable_logs:
             rest_response = self.session.request(method=method, url=full_url, **kwargs)
+            if not mute_error:
+                rest_response.raise_for_status()
             return rest_response
 
         log.msg(
@@ -70,6 +72,8 @@ class RestClient:
             event="Response", status_code=rest_response.status_code, headers=rest_response.headers,
             json=self._get_json(rest_response)
         )
+        if not mute_error:
+            rest_response.raise_for_status()
         return rest_response
 
     @staticmethod

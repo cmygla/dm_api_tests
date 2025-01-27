@@ -1,4 +1,7 @@
-from restclient.client import RestClient
+from restclient.client import (
+    RestClient,
+    RestResponse,
+)
 
 
 class MailhogApi(RestClient):
@@ -9,4 +12,4 @@ class MailhogApi(RestClient):
         response = self.get(
             path='/api/v2/messages', params=params, verify=False
         )
-        return response
+        return RestResponse(response)

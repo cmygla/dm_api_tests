@@ -44,7 +44,7 @@ class MailhogHelper:
         response = self.mailhog.mailhog_api.get_api_v2_messages(params)
         token_name = "ConfirmationLinkUrl" if type_.lower() == "registration" else "ConfirmationLinkUri"
 
-        for item in response.body["items"]:
+        for item in response.body_as_object["items"]:
             user_data = loads(item.get('Content').get('Body'))
             user_login = user_data.get("Login")
             if user_login == login:

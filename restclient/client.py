@@ -1,42 +1,35 @@
 import uuid
 from json import JSONDecodeError
 from typing import (
-    TypeVar,
-    Generic,
     Optional,
 )
 
 import curlify
 import requests
 import structlog
+from pydantic import BaseModel
 
 from restclient.configuration import Configuration
 
 structlog.configure(
     processors=[structlog.processors.JSONRenderer(indent=4, ensure_ascii=True)], )
 
-T = TypeVar('T')
 
-
-class RestResponse(Generic[T], requests.Response):
-    def __init__(self, response: requests.Response, body_type: Optional[type[T]] = None):
+class RestResponse(requests.Response):
+    def __init__(self, response: requests.Response, body_type: Optional[type[BaseModel]] = None):
         super().__init__()
         self.__dict__.update(response.__dict__)
-        self.body = self._get_json()
-        if not body_type:
-            self.body_as_object = None
-        else:
-            try:
-                self.body_as_object = body_type(**response.json())
-            except Exception as e:
-                print(f'Ошибка преобразования тела ответа: {e}')
-                self.body_as_object = None
+        self._body_type = body_type
+        self.body_as_object = self._json_as_object(response)
 
-    def _get_json(self):
+    def _json_as_object(self, resp):
         try:
-            return self.json()
-        except JSONDecodeError:
-            return self.text
+            if self._body_type:
+                return self._body_type(**resp.json())
+            else:
+                return resp.json()
+        except Exception as e:
+            return None
 
 
 class RestClient:

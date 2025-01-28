@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 
+from common.tools.base_randomizer import generate_email
 from helpers.account_helper import (
     AccountHelper,
     Credentials,
@@ -19,7 +20,7 @@ def prepared_user():
     date = now.strftime("%H_%M_%S_%f")
     login = f'ekv_{date}'
     password = '12345678'
-    email = f'{login}@mail.ru'
+    email = generate_email(login)
     user = Credentials(login=login, password=password, email=email)
     return user
 
@@ -55,7 +56,5 @@ def auth_account_helper(prepared_user, mailhog_helper):
     dm_api_configuration = Configuration(host="http://5.63.153.31:5051", disable_logs=False)
     dm_api_client = DmApiAccount(configuration=dm_api_configuration)
     account_helper = AccountHelper(dm_api_account_client=dm_api_client, mailhog_helper=mailhog_helper)
-    account_helper.auth_client(
-        login=prepared_user.login, password=prepared_user.password, email=prepared_user.email, validate_response=False
-    )
+    account_helper.auth_client(login=prepared_user.login, password=prepared_user.password, email=prepared_user.email)
     return account_helper

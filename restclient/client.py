@@ -1,14 +1,35 @@
 import uuid
 from json import JSONDecodeError
+from typing import (
+    Optional,
+)
 
 import curlify
 import requests
 import structlog
+from pydantic import BaseModel
 
 from restclient.configuration import Configuration
 
 structlog.configure(
     processors=[structlog.processors.JSONRenderer(indent=4, ensure_ascii=True)], )
+
+
+class RestResponse(requests.Response):
+    def __init__(self, response: requests.Response, body_type: Optional[type[BaseModel]] = None):
+        super().__init__()
+        self.__dict__.update(response.__dict__)
+        self._body_type = body_type
+        self.body_as_object = self._json_as_object(response)
+
+    def _json_as_object(self, resp):
+        try:
+            if self._body_type:
+                return self._body_type(**resp.json())
+            else:
+                return resp.json()
+        except Exception as e:
+            return None
 
 
 class RestClient:
@@ -55,11 +76,17 @@ class RestClient:
         full_url = self.host + path
         if self.disable_logs:
             rest_response = self.session.request(method=method, url=full_url, **kwargs)
+            rest_response.raise_for_status()
             return rest_response
 
         log.msg(
-            event="Request", method=method, full_url=full_url, params=kwargs.get("params"),
-            headers=kwargs.get("headers"), json=kwargs.get("json"), data=kwargs.get("data"), )
+            event="Request",
+            method=method,
+            full_url=full_url,
+            params=kwargs.get("params"),
+            headers=kwargs.get("headers"),
+            json=kwargs.get("json"),
+            data=kwargs.get("data"), )
 
         rest_response = self.session.request(method=method, url=full_url, **kwargs)
 
@@ -67,9 +94,12 @@ class RestClient:
         print(curl)
 
         log.msg(
-            event="Response", status_code=rest_response.status_code, headers=rest_response.headers,
+            event="Response",
+            status_code=rest_response.status_code,
+            headers=rest_response.headers,
             json=self._get_json(rest_response)
         )
+        rest_response.raise_for_status()
         return rest_response
 
     @staticmethod

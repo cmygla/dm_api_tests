@@ -15,3 +15,11 @@ class LoginApi(RestClient):
             path='/v1/account/login', json=login_credentials.model_dump(exclude_none=True, by_alias=True)
         )
         return RestResponse(response, UserEnvelope)
+
+    def delete_v1_account_login(self):
+        response = self.delete(path='/v1/account/login')
+        return RestResponse(response)
+
+    def delete_v1_account_login_all(self):
+        response = self.delete(path='/v1/account/login/all')
+        return RestResponse(response)

@@ -1,6 +1,8 @@
 import time
 from collections import namedtuple
 
+import allure
+
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
 from dm_api_account.models.registration import Registration
@@ -19,18 +21,22 @@ class AccountHelper:
         self.mailhog_helper = mailhog_helper
         self.dm_api_account = dm_api_account_client
 
+    @allure.step("Получение креденшелов пользователя")
     def get_credentials(self):
         return Credentials(self._login, self._password, self._email)
 
+    @allure.step("Создание пользователя")
     def create_user(self, login: str, password: str, email: str):
         reigistaration = Registration(login=login, password=password, email=email)
         response = self.dm_api_account.account_api.post_v1_account(reigistaration)
 
+    @allure.step("Активация пользователя")
     def activate_user(self, token: str):
         response = self.dm_api_account.account_api.put_v1_account_token(
             token=token
         )
 
+    @allure.step("Регистрация пользователя")
     def register_new_user(self, login: str, password: str, email: str):
         self.create_user(email=email, login=login, password=password)
         start_time = time.time()
@@ -39,6 +45,7 @@ class AccountHelper:
         assert end_time - start_time < 3, "Время ожидания активации превышено"
         self.activate_user(token)
 
+    @allure.step("Аутентификация пользователя")
     def login_user_raw(self, login: str, password: str):
         login_credentials = LoginCredentials(login=login, password=password, remember_me=True)
         response = self.dm_api_account.login_api.post_v1_account_login(login_credentials)
@@ -49,6 +56,7 @@ class AccountHelper:
         assert response.headers['X-Dm-Auth-Token'], "Токен для пользователя не получен"
         return response
 
+    @allure.step("Генерация авторизованного пользователя")
     def auth_client(self, login: str, password: str, email: str):
         self.register_new_user(login=login, password=password, email=email)
         response = self.login_user_raw(login=login, password=password)
@@ -72,10 +80,10 @@ class AccountHelper:
         return response
 
     def delete_account_login(self):
-        response = self.dm_api_account.account_api.delete_v1_account_login()
+        response = self.dm_api_account.login_api.delete_v1_account_login()
 
     def delete_acсount_login_all(self):
-        response = self.dm_api_account.account_api.delete_v1_account_login_all()
+        response = self.dm_api_account.login_api.delete_v1_account_login_all()
 
     def change_account_password(self, login: str, email: str, old_pass: str, new_pass: str):
         reset_password = ResetPassword(login=login, email=email)

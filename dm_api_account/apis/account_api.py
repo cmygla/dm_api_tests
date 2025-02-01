@@ -37,14 +37,6 @@ class AccountApi(RestClient):
         response = self.get(path='/v1/account')
         return RestResponse(response, UserDetailsEnvelope)
 
-    def delete_v1_account_login(self):
-        response = self.delete(path='/v1/account/login')
-        return RestResponse(response)
-
-    def delete_v1_account_login_all(self):
-        response = self.delete(path='/v1/account/login/all')
-        return RestResponse(response)
-
     def post_v1_account_password(self, reset_password: ResetPassword):
         response = self.post(
             path='/v1/account/password', json=reset_password.model_dump(exclude_none=True, by_alias=True)

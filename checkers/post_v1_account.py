@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import allure
 from hamcrest import (
     equal_to,
     all_of,
@@ -12,7 +13,9 @@ from hamcrest import (
 
 
 class PostV1Account:
+
     @classmethod
+    @allure.step("Проверка ответа")
     def check_response_values(cls, login, response):
         today = datetime.now().strftime("%Y-%m-%d")
         assert_that(str(response.body_as_object.resource.registration), starts_with(today))

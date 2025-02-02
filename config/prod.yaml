@@ -5,3 +5,7 @@ service:
 user:
   login: "test_ekv"
   password: "12345678"
+
+telegram:
+  chat_id: "-1002433426911"
+  token: "7607627887:AAF28UEdYQqXkRcRBS1IBqZIEHY56_UpWTc"

@@ -1,4 +1,5 @@
 # https://intellij-support.jetbrains.com/hc/en-us/community/posts/12897247432338-PyCharm-unable-to-find-fixtures-in-conftest-py
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -8,15 +9,16 @@ from vyper import v
 
 from common.tools.base_randomizer import generate_email
 from helpers.account_helper import (
-    AccountHelper,
     Credentials,
+    AccountHelper,
 )
 from helpers.mailhog_helper import MailhogHelper
-from restclient.configuration import Configuration
+from packages.restclient.configuration import Configuration
 from services.api_mailhog import Mailhog
 from services.dm_api_account import DmApiAccount
 
-options = ('service.dm_api_account', 'service.mailhog', 'user.login', 'user.password')
+options = (
+    'service.dm_api_account', 'service.mailhog', 'user.login', 'user.password', 'telegram.chat_id', 'telegram.token')
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -43,6 +45,10 @@ def set_config(request):
     v.read_in_config()
     for option in options:
         v.set(option, request.config.getoption(f'--{option}'))
+    os.environ["TELEGRAM_BOT_CHAT_ID"] = v.get("telegram.chat_id")
+    os.environ["TELEGRAM_BOT_ACCESS_TOKEN"] = v.get("telegram.token")
+    request.config.stash['telegram-notifier-addfields']['enviroment'] = config_name
+    request.config.stash['telegram-notifier-addfields']['report'] = "https://cmygla.github.io/dm_api_tests/"
 
 
 def pytest_addoption(parser):

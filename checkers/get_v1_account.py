@@ -11,7 +11,7 @@ from hamcrest import (
     greater_than_or_equal_to,
 )
 
-from dm_api_account.models.user_details_envelope import UserRole
+from clients.http.dm_api_account.models.user_details_envelope import UserRole
 
 
 class GetV1Account:

@@ -1,4 +1,4 @@
-from restclient.client import (
+from packages.restclient.client import (
     RestClient,
     RestResponse,
 )

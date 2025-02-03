@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from checkers.http_checkers import check_status_code_http
@@ -13,27 +14,33 @@ def generate_random_email():
     return generate_email(first_part)
 
 
-def test_post_v1_account(account_helper, prepared_user):
-    login = prepared_user.login
-    password = prepared_user.password
-    email = prepared_user.email
-    account_helper.register_new_user(email=email, login=login, password=password)
-    response = account_helper.login_user(login=login, password=password)
-    PostV1Account.check_response_values(login, response)
+@allure.suite("Тест на проверку метода POST:v1/account")
+class TestPostV1Account:
 
-
-@pytest.mark.parametrize(
-    "login, email, password, expected_status_code, expected_title, expected_errors",
-    [("valid_login", "invalid_email", "valid_password", 400, "Validation failed", {
-        "Email": ["Invalid"]}),  # Невалидный e-mail
-     ("1", generate_random_email(), "valid_password", 400, "Validation failed", {
-         "Login": ["Short"]}),  # Короткий логин
-     ("valid_login", generate_random_email(), "12345", 400, "Validation failed", {
-         "Password": ["Short"]}),  # Короткий пароль
-     ]
-)
-def test_negative_post_v1_account(
-        account_helper, login, email, password, expected_status_code, expected_title, expected_errors
-):
-    with check_status_code_http(expected_status_code, expected_title, expected_errors):
+    @allure.sub_suite("Позитивные тесты")
+    @allure.title("Проверка регистрации нового пользователя")
+    def test_post_v1_account(self, account_helper, prepared_user):
+        login = prepared_user.login
+        password = prepared_user.password
+        email = prepared_user.email
         account_helper.register_new_user(email=email, login=login, password=password)
+        response = account_helper.login_user(login=login, password=password)
+        PostV1Account.check_response_values(login, response)
+
+    @allure.sub_suite("Негативные тесты")
+    @allure.title("Проверка валидаций при регистрации нового пользователя")
+    @pytest.mark.parametrize(
+        "login, email, password, expected_status_code, expected_title, expected_errors",
+        [("valid_login", "invalid_email", "valid_password", 400, "Validation failed", {
+            "Email": ["Invalid"]}),  # Невалидный e-mail
+         ("1", generate_random_email(), "valid_password", 400, "Validation failed", {
+             "Login": ["Short"]}),  # Короткий логин
+         ("valid_login", generate_random_email(), "12345", 400, "Validation failed", {
+             "Password": ["Short"]}),  # Короткий пароль
+         ]
+    )
+    def test_negative_post_v1_account(
+            self, account_helper, login, email, password, expected_status_code, expected_title, expected_errors
+    ):
+        with check_status_code_http(expected_status_code, expected_title, expected_errors):
+            account_helper.register_new_user(email=email, login=login, password=password)

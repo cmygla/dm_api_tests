@@ -1,6 +1,7 @@
 import time
 from json import loads
 
+import allure
 from retrying import retry
 
 from services.api_mailhog import Mailhog
@@ -32,6 +33,7 @@ class MailhogHelper:
     def __init__(self, mailhog_client: Mailhog):
         self.mailhog = mailhog_client
 
+    @allure.step("Получение активационного токена пользователя")
     def get_activation_token_by_login(self, login: str, type_: str = "registration"):
         token = self.get_activation_token(login=login, type_=type_)
         return token

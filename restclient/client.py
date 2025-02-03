@@ -4,12 +4,14 @@ from typing import (
     Optional,
 )
 
+import allure
 import curlify
 import requests
 import structlog
 from pydantic import BaseModel
 
 from restclient.configuration import Configuration
+from restclient.utilities import allure_attach
 
 structlog.configure(
     processors=[structlog.processors.JSONRenderer(indent=4, ensure_ascii=True)], )
@@ -49,28 +51,34 @@ class RestClient:
     def get(
             self, path, **kwargs
     ):
-        return self._send_request(method='GET', path=path, **kwargs)
+        with allure.step(f"GET {self.host + path}"):
+            return self._send_request(method='GET', path=path, **kwargs)
 
     def post(
             self, path, **kwargs
     ):
-        return self._send_request(method='POST', path=path, **kwargs)
+        with allure.step(f"POST {self.host + path}"):
+            return self._send_request(method='POST', path=path, **kwargs)
 
     def put(
             self, path, **kwargs
     ):
-        return self._send_request(method='PUT', path=path, **kwargs)
+        with allure.step(f"PUT {self.host + path}"):
+            return self._send_request(method='PUT', path=path, **kwargs)
 
     def patch(
             self, path, **kwargs
     ):
-        return self._send_request(method='PATCH', path=path, **kwargs)
+        with allure.step(f"PATCH {self.host + path}"):
+            return self._send_request(method='PATCH', path=path, **kwargs)
 
     def delete(
             self, path, **kwargs
     ):
-        return self._send_request(method='DELETE', path=path, **kwargs)
+        with allure.step(f"DELETE {self.host + path}"):
+            return self._send_request(method='DELETE', path=path, **kwargs)
 
+    @allure_attach
     def _send_request(self, method, path, **kwargs):
         log = self.log.bind(event_id=str(uuid.uuid4()))
         full_url = self.host + path

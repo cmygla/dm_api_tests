@@ -9,7 +9,6 @@ curl -X 'POST' \
   "password": "test"
 }
 '''
-import pprint
 
 import requests
 
@@ -19,12 +18,13 @@ import requests
 # response = requests.post(url=url, headers=headers, json=payload)
 #
 # print(response.status_code)
-#pprint.pprint(response.json())
+# pprint.pprint(response.json())
 
 url = "http://5.63.153.31:5051/v1/account/5cdd7e97-af35-435e-96e7-97b03bc7b760"
-headers = {"accept": "text/plain",}
+headers = {
+    "accept": "text/plain", }
 response = requests.put(url=url, headers=headers)
 
-print(response.status_code)
+print(f"{response.status_code}")
 response_json = response.json()
 print(response_json["resource"]["rating"]["quantity"])

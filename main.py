@@ -25,6 +25,6 @@ headers = {
     "accept": "text/plain", }
 response = requests.put(url=url, headers=headers)
 
-print(response.status_code)
+print(f"{response.status_code}")
 response_json = response.json()
 print(response_json["resource"]["rating"]["quantity"])

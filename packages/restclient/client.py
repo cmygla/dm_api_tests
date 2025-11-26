@@ -103,11 +103,13 @@ class RestClient:
         curl = curlify.to_curl(rest_response.request)
         print(curl)
 
+        # swagger coverage
         uri = URI(host=self.host, base_path="", unformatted_path=path, uri_params=kwargs.get("params"))
         RequestSchemaHandler(
             uri, method.lower(), rest_response, kwargs
         ).write_schema()
 
+        # logging
         log.msg(
             event="Response",
             status_code=rest_response.status_code,

@@ -4,7 +4,6 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from swagger_coverage_py.reporter import CoverageReporter
 from vyper import v
 
 from common.tools.base_randomizer import generate_email
@@ -23,12 +22,14 @@ options = (
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_swagger_coverage():
-    reporter = CoverageReporter(api_name="dm-api-account", host="http://5.63.153.31:5051")
-    reporter.cleanup_input_files()
-    reporter.setup("/swagger/Account/swagger.json")
-
-    yield
-    reporter.generate_report()
+    # reporter = CoverageReporter(api_name="dm-api-account", host="http://5.63.153.31:5051")
+    # reporter.cleanup_input_files()
+    # reporter.setup("/swagger/Account/swagger.json")
+    #
+    # yield
+    # if platform.system() != "Linux":
+    #     reporter.generate_report()
+    ...
 
 
 @pytest.fixture(scope="session", autouse=True)

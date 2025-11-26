@@ -29,12 +29,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install poetry
+          poetry install --no-root
 
       - name: Run tests
         run: |
           export JAVA_HOME=$JAVA_HOME
-          pytest ./tests --alluredir=allure-results
+          poetry run pytest ./tests --alluredir=allure-results
         continue-on-error: true
 
       - name: Run Coverage

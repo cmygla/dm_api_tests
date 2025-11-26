@@ -1,5 +1,6 @@
 # https://intellij-support.jetbrains.com/hc/en-us/community/posts/12897247432338-PyCharm-unable-to-find-fixtures-in-conftest-py
 import os
+import platform
 from datetime import datetime
 from pathlib import Path
 
@@ -24,11 +25,12 @@ options = (
 @pytest.fixture(scope="session", autouse=True)
 def setup_swagger_coverage():
     reporter = CoverageReporter(api_name="dm-api-account", host="http://5.63.153.31:5051")
-    reporter.cleanup_input_files()
+    # reporter.cleanup_input_files()
     reporter.setup("/swagger/Account/swagger.json")
 
     yield
-    reporter.generate_report()
+    if platform.system() != "Linux":
+        reporter.generate_report()  # ...
 
 
 @pytest.fixture(scope="session", autouse=True)

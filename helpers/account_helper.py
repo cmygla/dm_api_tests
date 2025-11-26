@@ -27,8 +27,8 @@ class AccountHelper:
 
     @allure.step("Создание пользователя")
     def create_user(self, login: str, password: str, email: str):
-        reigistaration = Registration(login=login, password=password, email=email)
-        response = self.dm_api_account.account_api.post_v1_account(reigistaration)
+        registration = Registration(login=login, password=password, email=email)
+        response = self.dm_api_account.account_api.post_v1_account(registration)
 
     @allure.step("Активация пользователя")
     def activate_user(self, token: str):
